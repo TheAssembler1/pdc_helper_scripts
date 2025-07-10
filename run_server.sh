@@ -4,8 +4,8 @@ set -e
 
 ./rebuild.sh
 
-echo "killing previous pdc_server.exe"
-pkill -f pdc_server.exe || true
+echo "killing previous pdc_server"
+pkill -f pdc_server || true
 lsof -t -i :8000 | xargs -r kill -9
 
 echo "deleting existing data"
