@@ -4,7 +4,7 @@ set -e
 
 ./rebuild.sh
 
-echo "killing previous pdc_server.exe"
+echo "killing previous pdc_server"
 pkill -f pdc_server || true
 lsof -t -i :8000 | xargs -r kill -9
 
@@ -13,5 +13,5 @@ rm -rf /home/nlewi26/src/work_space/source/pdc/build/bin/pdc_data
 
 pushd ./build/bin
 export PDC_DEBUG=1
-$1 ./pdc_server.exe
+$1 ./pdc_server
 popd
