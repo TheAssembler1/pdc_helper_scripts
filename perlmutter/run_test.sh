@@ -6,12 +6,10 @@ set -e
 
 echo "killing previous pdc_server.exe"
 pkill -f pdc_server || true
-lsof -t -i :8000 | xargs -r kill -9
 
 echo "deleting existing data"
 rm -rf /home/nlewi26/src/work_space/source/pdc/build/bin/pdc_data
 
-pushd ./build/bin
-export PDC_DEBUG=1
-$1 ./pdc_server.exe
+pushd ./build
+ctest --stop-on-failure --output-on-failure --timeout 15
 popd
