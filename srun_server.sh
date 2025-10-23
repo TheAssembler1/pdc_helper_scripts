@@ -1,7 +1,11 @@
+#!/bin/bash
+
 set -x
 set -u
 
+NUM_NODES=2
+
 pushd ./build/bin
-rm server_output.txt || true
-srun -N$NUM_NODES -n$NUM_NODES --ntasks-per-node=1 ./pdc_server 2>&1 | tee server_output.txt
+rm *.log *.err || true
+srun -N $NUM_NODES -n $NUM_NODES --ntasks-per-node=1 --error="server_output.err" --output="server_output.log" ./pdc_server &
 popd
