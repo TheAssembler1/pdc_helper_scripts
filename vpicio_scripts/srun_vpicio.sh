@@ -11,7 +11,6 @@ export CLIENTS_PER_NODE=32
 export SERVER_TOTAL_TASKS=$((NUM_NODES * DATA_SERVERS_PER_NODE))
 export CLIENT_TOTAL_TASKS=$((NUM_NODES * CLIENTS_PER_NODE))
 export BIN_DIR=/pscratch/sd/n/nlewi26/src/work_space/source/pdc/build/bin
-export TRANSFORM="zfp"
 export PDC_DATA_LOC=/pscratch/sd/n/nlewi26/src/work_space/install/pdc
 
 # Print them
@@ -22,13 +21,31 @@ echo "SERVER_TOTAL_TASKS=$SERVER_TOTAL_TASKS"
 echo "CLIENT_TOTAL_TASKS=$CLIENT_TOTAL_TASKS"
 echo "BIN_DIR=$BIN_DIR"
 echo "TRANSFORM=$TRANSFORM"
-echo "PDC_DATA_LOC=$PDC_DATA_LOC$"
+echo "PDC_DATA_LOC=$PDC_DATA_LOC"
 
 echo "running server script"
-./srun_server.sh
+time ./srun_server.sh vpicio
 
 echo "running client script"
-./srun_client.sh
+time ./srun_client.sh vpicio
 
 echo "closing server script"
-./srun_close_server.sh
+time ./srun_close_server.sh vpicio
+
+echo "logging data dir"
+find $PDC_DATA_LOC/pdc_data -type f | wc -l
+find $PDC_DATA_LOC/pdc_data -type f -exec stat --printf="%s %n\n" {} \;
+
+echo "running server script"
+time ./srun_server.sh bdcats
+
+echo "running client script"
+time ./srun_client.sh bdcats
+
+echo "closing server script"
+time ./srun_close_server.sh bdcats
+
+mkdir $SLURM_JOB_ID
+mv *.out $SLURM_JOB_ID
+cp $BIN_DIR/*.out $SLURM_JOB_ID
+cp $BIN_DIR/*.err $SLURM_JOB_ID

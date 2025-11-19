@@ -5,8 +5,9 @@
 #SBATCH --cpus-per-task=1
 #SBATCH --account=m2621
 #SBATCH --time=01:00:00
-#SBATCH --constraint=cpu
+#SBATCH --constraint=gpu
 #SBATCH --qos=regular
+#SBATCH --gpus-per-node=2
 
 # Set environment variables
 export NUM_NODES=$SLURM_JOB_NUM_NODES
