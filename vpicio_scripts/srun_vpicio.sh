@@ -33,11 +33,21 @@ echo "closing server script"
 time ./srun_close_server.sh vpicio
 
 echo "logging data dir"
-find $PDC_DATA_LOC/pdc_data -type f | wc -l
-find $PDC_DATA_LOC/pdc_data -type f -exec stat --printf="%s %n\n" {} \;
+# Example output: filepath bytes stripecount stripesize ost_index
+# ./.git/objects/34/272d525902ea41c81b5df0ca2542c0d4f34aa3 315 1 1048576 254
+find $PDC_DATA_LOC/pdc_data -type f -exec sh -c '
+  for f do
+    s=$(stat -c %s "$f")
+    si=$(lfs getstripe "$f" 2>/dev/null)
+    c=$(echo "$si" | awk "/lmm_stripe_count/ {print \$2}")
+    sz=$(echo "$si" | awk "/lmm_stripe_size/ {print \$2}")
+    o=$(echo "$si" | awk "/^[[:space:]]*[0-9]+[[:space:]]/ {print \$1}" | paste -sd, -)
+    echo -e "$f\t$s\t${c:-N/A}\t${sz:-N/A}\t${o:-N/A}"
+  done
+' sh {} +
 
 echo "running server script"
-time ./srun_server.sh bdcats
+time ./srun_server_restart.sh bdcats
 
 echo "running client script"
 time ./srun_client.sh bdcats
@@ -45,7 +55,7 @@ time ./srun_client.sh bdcats
 echo "closing server script"
 time ./srun_close_server.sh bdcats
 
-mkdir $SLURM_JOB_ID
-mv *.out $SLURM_JOB_ID
-cp $BIN_DIR/*.out $SLURM_JOB_ID
-cp $BIN_DIR/*.err $SLURM_JOB_ID
+mkdir ./$TRANSFORM/$SLURM_JOB_ID
+mv *.out /$TRANSFORM/$SLURM_JOB_ID
+cp $BIN_DIR/*.out ./$TRANSFORM/$SLURM_JOB_ID
+cp $BIN_DIR/*.err ./$TRANSFORM/$SLURM_JOB_ID
