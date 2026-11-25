@@ -35,7 +35,7 @@ build_mercury() {
 build_pdc() {
   need "$MERCURY_DIR/include/mercury.h" mercury
   # shellcheck disable=SC2046
-  pdc_build "$SRC/build-pdc" "$PDC_DIR" -DCMAKE_C_COMPILER=cc -DPDC_ENABLE_LUSTRE=ON $(mercury_args "$MERCURY_DIR")
+  pdc_build "$SRC/build-pdc" "$PDC_DIR" -DCMAKE_C_COMPILER=cc -DPDC_ENABLE_LUSTRE=ON -DMPI_RUN_CMD=srun $(mercury_args "$MERCURY_DIR")
   # A PDC setup script in the login shell can point CMake at another Mercury.
   grep -q "^MERCURY_DIR:[A-Z]*=$MERCURY_DIR/" "$SRC/build-pdc/CMakeCache.txt" ||
     { echo "PDC configured against $(grep '^MERCURY_DIR:' "$SRC/build-pdc/CMakeCache.txt")" >&2; exit 1; }
